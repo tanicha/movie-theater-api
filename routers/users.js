@@ -1,7 +1,7 @@
 const express = require('express');
+const {db} = require('../db');
 const {User} = require('../models/User');
 const {Show} = require('../models/Show');
-const {sequelize} = require('../db');
 const router = express.Router();
 
 //get route for all users in db
@@ -9,7 +9,7 @@ router.get('/', async (req, res) => {
     try {
         const users = await User.findAll()
         res.status(200).json(users)
-    } catch {
+    } catch(error){
         console.error(error)
         res.status(404).send('No users in database')
     }
@@ -20,7 +20,7 @@ router.get('/:id', async (req, res) => {
     try {
         const foundUser = await User.findByPk(req.params.id)
         res.status(200).json(foundUser)
-    } catch {
+    } catch(error){
         console.error(error)
         res.status(404).send('Cannot find user')
     }
@@ -36,7 +36,7 @@ router.get('/:id/shows', async (req, res) => {
             ]
         })
         res.status(200).json(showsWatchedByUser)
-    } catch {
+    } catch(error){
         console.error(error)
         res.status(404).send('No shows watched by user')
     }
@@ -57,8 +57,10 @@ router.put('/:id/shows/:showId', async (req, res) => {
         await user.addShow(show)
 
         res.status(200).send('Show has been added to user`s list!')
-    } catch {
+    } catch(error){
         console.error(error)
         res.status(500).send('Cannot associate show to that user')
     }
-})
+});
+
+module.exports = router;

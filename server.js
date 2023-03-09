@@ -1,6 +1,9 @@
 const express = require('express');
-const app = require('express');
-const {sequelize} = require('./db');
+const app = express();
+const {db} = require('./db');
+const seedData = require('./seed')
+
+//importing routers
 const showsRouter = require('./routers/shows');
 const usersRouter = require('./routers/users');
 
@@ -17,7 +20,7 @@ app.use('/users', usersRouter);
 
 //creating port for local host address
 app.listen(port, () => {
-    sequelize.sync()
+    db.sync()
     console.log(`Listening on port http://localhost:${port}`)
 });
 
