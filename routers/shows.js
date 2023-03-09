@@ -21,7 +21,7 @@ router.get('/:id', async (req, res) => {
         res.status(200).json(foundShow)
     } catch(error){
         console.error(error)
-        res.status(404).send('No shows with that ID')
+        res.status(404).send('Cannot find show with given ID')
     }
 });
 
@@ -36,7 +36,7 @@ router.get('/genres/:genre', async (req, res) => {
         res.status(200).json(foundGenre)
     } catch(error){
         console.error(error)
-        res.status(404).send(`No shows with the genre of ${req.params.genre}`)
+        res.status(404).send('No shows in the given genre')
     }
 });
 
@@ -66,7 +66,7 @@ router.put('/:id/watched', async (req, res) => {
         res.status(200).json(foundShow)
     } catch(error){
         console.error(error)
-        res.status(500).send('Could not update show')
+        res.status(500).send('Cannot update show')
     }
 });
 

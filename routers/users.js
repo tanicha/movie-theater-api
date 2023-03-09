@@ -4,7 +4,7 @@ const {User} = require('../models/User');
 const {Show} = require('../models/Show');
 const router = express.Router();
 
-//get route for all users in db
+//get route for all users in db - postman works
 router.get('/', async (req, res) => {
     try {
         const users = await User.findAll()
@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-//get route for specific user
+//get route for specific user - postman works
 router.get('/:id', async (req, res) => {
     try {
         const foundUser = await User.findByPk(req.params.id)
@@ -26,23 +26,25 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-//get route for ALL shows with User specific id
+//get route for ALL shows with User specific id - postman works
 router.get('/:id/shows', async (req, res) => {
     try {
-        const foundUser = await User.findByPk(req.params.id)
-        const showsWatchedByUser = foundUser.findAll({
+        const specificUser = await User.findAll({
+            where: {
+                id: req.params.id
+            },
             include: [
                 {model: Show}
             ]
-        })
-        res.status(200).json(showsWatchedByUser)
+      })
+      res.status(200).json(specificUser)
     } catch(error){
         console.error(error)
         res.status(404).send('No shows watched by user')
     }
 });
 
-//update/patch a user's show 
+//update/put a user's show - postman works (assigning userId to show)
 router.put('/:id/shows/:showId', async (req, res) => {
     try {
         //get both ids
@@ -56,7 +58,10 @@ router.put('/:id/shows/:showId', async (req, res) => {
         //create association
         await user.addShow(show)
 
-        res.status(200).send('Show has been added to user`s list!')
+        //get all shows that are assigned to user
+        const usersWithShows = await user.getShows()
+
+        res.status(200).json(usersWithShows)
     } catch(error){
         console.error(error)
         res.status(500).send('Cannot associate show to that user')
