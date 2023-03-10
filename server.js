@@ -23,4 +23,3 @@ app.listen(port, () => {
     db.sync()
     console.log(`Listening on port http://localhost:${port}`)
 });
-

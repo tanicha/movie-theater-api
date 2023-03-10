@@ -5,7 +5,7 @@ const {Show} = require('../models/Show');
 const router = express.Router();
 const {check, validationResult} = require('express-validator');
 
-//get route for all users in db - postman works
+//GET route for all users in db - postman data successful
 router.get('/', async (req, res) => {
     try {
         const users = await User.findAll()
@@ -16,18 +16,18 @@ router.get('/', async (req, res) => {
     }
 });
 
-//get route for specific user - postman works
+//GET route for specific user - postman data successful
 router.get('/:id', async (req, res) => {
     try {
         const foundUser = await User.findByPk(req.params.id)
         res.status(200).json(foundUser)
     } catch(error){
         console.error(error)
-        res.status(404).send('Cannot find user')
+        res.status(500).send('Cannot find user')
     }
 });
 
-//get route for ALL shows with User specific id - postman works
+//GET route for ALL shows with User specific id - postman data successful
 router.get('/:id/shows', async (req, res) => {
     try {
         const specificUser = await User.findAll({
@@ -41,11 +41,11 @@ router.get('/:id/shows', async (req, res) => {
       res.status(200).json(specificUser)
     } catch(error){
         console.error(error)
-        res.status(404).send('No shows watched by user')
+        res.status(404).send('Cannot find shows')
     }
 });
 
-//update/put a user's show - postman works (assigning userId to show)
+//PUT route for adding/updating user's show - postman data successful (assigning userId to show)
 router.put('/:id/shows/:showId', async (req, res) => {
     try {
         //get both ids
@@ -56,7 +56,7 @@ router.put('/:id/shows/:showId', async (req, res) => {
         const user = await User.findByPk(id)
         const show = await Show.findByPk(showId)
 
-        //create association
+        //add show to user
         await user.addShow(show)
 
         //get all shows that are assigned to user
@@ -65,7 +65,7 @@ router.put('/:id/shows/:showId', async (req, res) => {
         res.status(200).json(usersWithShows)
     } catch(error){
         console.error(error)
-        res.status(500).send('Cannot associate show to that user')
+        res.status(500).send('Cannot associate show to user')
     }
 });
 

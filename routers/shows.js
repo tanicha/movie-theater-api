@@ -3,9 +3,8 @@ const {Show} = require('../models/Show');
 const {db} = require('../db');
 const router = express.Router();
 const {check, validationResult} = require('express-validator');
-const e = require('express');
 
-//get route for all shows in db - postman works
+//GET route for all shows in db - postman data successful
 router.get('/', async (req, res) => {
     try {
         const shows = await Show.findAll()
@@ -16,18 +15,18 @@ router.get('/', async (req, res) => {
     }
 });
 
-//get route with show of specific id - postman works
+//GET route with show of specific id - postman data successful
 router.get('/:id', async (req, res) => {
     try {
         const foundShow = await Show.findByPk(req.params.id)
         res.status(200).json(foundShow)
     } catch(error){
         console.error(error)
-        res.status(404).send('Cannot find show with given ID')
+        res.status(404).send('Cannot find show')
     }
 });
 
-//get route for shows with specific genre - postman works
+//GET route for shows with specific genre - postman data successful
 router.get('/genres/:genre', async (req, res) => {
     try {
         const foundGenre = await Show.findAll({
@@ -38,11 +37,11 @@ router.get('/genres/:genre', async (req, res) => {
         res.status(200).json(foundGenre)
     } catch(error){
         console.error(error)
-        res.status(404).send('No shows in the given genre')
+        res.status(404).send('Cannot find shows in genre')
     }
 });
 
-//post route for creating new show - postman works
+//POST route for creating new show - postman data successful
 router.post('/', async (req, res) => {
     try {
         const newShow = await Show.create({
@@ -54,11 +53,11 @@ router.post('/', async (req, res) => {
         res.status(200).json(newShow)
     } catch {
         console.error(error)
-        res.status(404).send('Cannot create show')
+        res.status(500).send('Cannot create show')
     }
-})
+});
 
-//put route for updating the rating for shows with specific endpoint - postman works
+//PUT route for updating the rating for shows with specific endpoint - postman data successful
 router.put('/:id/watched',[check("rating").not().isEmpty().trim()], async (req, res) => {
     try {
         const errors = validationResult(req)
@@ -77,7 +76,7 @@ router.put('/:id/watched',[check("rating").not().isEmpty().trim()], async (req, 
     }
 });
 
-//put route for updating status on specific show from (cancelled -> on-going) OR (on-going -> cancelled) - postman works
+//PUT route for updating status on specific show from (cancelled -> on-going) OR (on-going -> cancelled) - postman data successful
 router.put('/:id/updates', async (req, res) => {
     try {
         const updatedStatus = await Show.findByPk(req.params.id)
@@ -97,18 +96,15 @@ router.put('/:id/updates', async (req, res) => {
     }
 });
 
-/* TANI NOTE:
+/* note:
 
-    the router above is different from below:
-    
     the router ABOVE will change a show that already has a status of 'on-going' OR 'cancelled' TO the opposite status (meaning there are only two options - 'on-going' OR 'cancelled') 
 
-    the router BELOW will be to update/change a show's status manually - using req.body 
+    the router BELOW will be to update/change a show's status manually - using req.body/urlencoded
 
-    (instructions in coding rooms was a bit confusing, so i added two routes to cover each instruction)
 */
 
-//put route for updating status manually - using req.body - postman works
+//PUT route for updating status manually - using req.body - postman data successful
 router.put('/:id',[check("status").not().isEmpty().trim().isLength({min: 5, max: 25})], async (req, res) => {
     try {
         const errors = validationResult(req)
@@ -123,11 +119,11 @@ router.put('/:id',[check("status").not().isEmpty().trim().isLength({min: 5, max:
         }
     } catch(error){
         console.log(error)
-        res.status(404).send('Cannot update status')
+        res.status(500).send('Cannot update status')
     }
 });
 
-//delete route for deleting specific show - postman works
+//DELETE route for deleting specific show - postman data successful
 router.delete('/:id', async (req, res) => {
     try {
         await Show.destroy({
