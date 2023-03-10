@@ -3,6 +3,7 @@ const {db} = require('../db');
 const {User} = require('../models/User');
 const {Show} = require('../models/Show');
 const router = express.Router();
+const {check, validationResult} = require('express-validator');
 
 //get route for all users in db - postman works
 router.get('/', async (req, res) => {

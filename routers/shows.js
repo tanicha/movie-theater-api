@@ -2,6 +2,8 @@ const express = require('express');
 const {Show} = require('../models/Show');
 const {db} = require('../db');
 const router = express.Router();
+const {check, validationResult} = require('express-validator');
+const e = require('express');
 
 //get route for all shows in db - postman works
 router.get('/', async (req, res) => {
@@ -56,21 +58,26 @@ router.post('/', async (req, res) => {
     }
 })
 
-//update/put route for rating for shows with specific endpoint - postman works
-router.put('/:id/watched', async (req, res) => {
+//put route for updating the rating for shows with specific endpoint - postman works
+router.put('/:id/watched',[check("rating").not().isEmpty().trim()], async (req, res) => {
     try {
-        const foundShow = await Show.findByPk(req.params.id)
-        await foundShow.update({
-            rating: req.body.rating
-        })
-        res.status(200).json(foundShow)
+        const errors = validationResult(req)
+        if (!errors.isEmpty()){
+            res.json({errors: errors.array()})
+        } else {
+            const foundShow = await Show.findByPk(req.params.id)
+            await foundShow.update({
+                rating: req.body.rating
+            })
+            res.status(200).json(foundShow)
+        }
     } catch(error){
         console.error(error)
         res.status(500).send('Cannot update show')
     }
 });
 
-//update/put status route on specific show from (cancelled -> on-going) OR (on-going -> cancelled) - postman works
+//put route for updating status on specific show from (cancelled -> on-going) OR (on-going -> cancelled) - postman works
 router.put('/:id/updates', async (req, res) => {
     try {
         const updatedStatus = await Show.findByPk(req.params.id)
@@ -87,6 +94,36 @@ router.put('/:id/updates', async (req, res) => {
     } catch(error){
         console.error(error)
         res.status(500).send('Cannot update status of show')
+    }
+});
+
+/* TANI NOTE:
+
+    the router above is different from below:
+    
+    the router ABOVE will change a show that already has a status of 'on-going' OR 'cancelled' TO the opposite status (meaning there are only two options - 'on-going' OR 'cancelled') 
+
+    the router BELOW will be to update/change a show's status manually - using req.body 
+
+    (instructions in coding rooms was a bit confusing, so i added two routes to cover each instruction)
+*/
+
+//put route for updating status manually - using req.body - postman works
+router.put('/:id',[check("status").not().isEmpty().trim().isLength({min: 5, max: 25})], async (req, res) => {
+    try {
+        const errors = validationResult(req)
+        if (!errors.isEmpty()){
+            res.json({errors: errors.array()})
+        } else {
+            const show = await Show.findByPk(req.params.id)
+            await show.update({
+                status: req.body.status
+            })
+            res.status(200).json(show)
+        }
+    } catch(error){
+        console.log(error)
+        res.status(404).send('Cannot update status')
     }
 });
 
