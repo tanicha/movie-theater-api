@@ -59,3 +59,6 @@ Use server-side validation in your routes to ensure that:
 ### Updating Show Ratings
 Use server-side validation in your routes to ensure that: 
 - If a user tries to make a request to update the rating of a show, the “rating” field cannot be empty or contain whitespace
+
+### Docker
+- I have also included a Dockerfile, allowing us to use docker to containerize this application and ship it.
