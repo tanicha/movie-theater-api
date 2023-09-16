@@ -8,5 +8,5 @@ RUN npm install
 
 CMD ["npm", "start"]
 
-# express runs on 3000 as well
-EXPOSE 3000
+# express runs on 3000
+EXPOSE 90
